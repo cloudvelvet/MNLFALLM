@@ -1,0 +1,35 @@
+# Local history / tooling
+.Rhistory
+.RData
+.Rproj.user/
+.omx/
+.pdf-tools/
+rstan_tmp/
+
+# Restricted MAPS source data and derived analytic data
+MAPS 2기 패널_Data_CSV (1)/
+longdat_maps.csv
+longdat_maps_parent_discrim.csv
+longdat_maps_parent_discrim_qc.csv
+maps_parent_userguide_text.txt
+
+# Large or machine-specific model outputs
+poster_model_output/
+simulation_output/
+simulation_parent_discrim_output/
+imps_poster_output/
+llm_dif_output/
+transfer_bundles/
+
+# Large serialized model objects
+*.rds
+*.Rds
+
+# Presentation build artifacts
+presentation_workspace/output/
+presentation_workspace/scratch/
+presentation_workspace/node_modules/
+
+# OS/editor noise
+Thumbs.db
+.DS_Store
