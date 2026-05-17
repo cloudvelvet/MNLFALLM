@@ -1,76 +1,76 @@
-# Validation Gates and Guardrails
+# 검증 게이트와 가드레일
 
 ## Gate 1. Leakage Audit
 
-Pass condition:
+통과 조건:
 
-- Generation prompts contain no DIF statistics, empirical labels, prior flagged item IDs, expert rationales, or model results.
+- generation prompt에 DIF 통계량, empirical label, prior flagged item ID, expert rationale, model result가 포함되지 않는다.
 
-Fail condition:
+실패 조건:
 
-- The LLM sees the answer key, directly or indirectly.
+- LLM이 직접 또는 간접적으로 정답지를 본다.
 
 ## Gate 2. Reproducibility Audit
 
-Pass condition:
+통과 조건:
 
-- prompt template, model name/version, parameters, batch file, timestamp, and raw responses are saved.
+- prompt template, model name/version, parameter, batch file, timestamp, raw response가 저장되어 있다.
 
-Recommended minimum:
+권장 최소 조건:
 
-- repeat a subset of items at least twice or run two prompt variants.
+- item subset을 최소 2회 반복하거나 2개 이상의 prompt variant를 실행한다.
 
 ## Gate 3. Comparator Fairness Audit
 
-Pass condition:
+통과 조건:
 
-- keyword, LLM, and any human expert comparison use defined inputs and comparable item-covariate units.
+- keyword, LLM, human expert 비교가 모두 동일하게 정의된 item-covariate 단위를 사용한다.
 
-If human experts are used:
+human expert를 비교군으로 넣는 경우:
 
-- same item text.
-- same covariate definitions.
-- no empirical DIF results.
-- fixed time/attempt budget.
+- 동일한 item text.
+- 동일한 covariate definition.
+- empirical DIF result 미제공.
+- time/attempt budget 고정.
 
 ## Gate 4. Negative-Control Audit
 
-Pass condition:
+통과 조건:
 
-- shuffled covariate labels or null/simulated items do not receive high DIF probabilities at unacceptable rates.
+- shuffled covariate label 또는 null/simulated item이 허용 불가능한 수준의 high DIF probability를 받지 않는다.
 
-Purpose:
+목적:
 
-- detect generic storytelling and subgroup stereotyping.
+- generic storytelling과 subgroup stereotyping을 탐지한다.
 
 ## Gate 5. Psychometric Validation
 
-Pass condition:
+통과 조건:
 
-- at least focal top-ranked candidates are tested with a preregistered ordinal DIF/MNLFA-style model.
+- 최소한 focal top-ranked candidate는 preregistered ordinal DIF/MNLFA-style model로 검증한다.
 
-Claim strength:
+claim strength:
 
-- without MNLFA/formal validation: "candidate hypotheses only."
-- with validation: "LLM-prioritized hypotheses showed partial empirical support."
-- never: "LLM proved DIF cause."
+- MNLFA/formal validation 전: "candidate hypotheses only."
+- validation 후: "LLM-prioritized hypotheses showed partial empirical support."
+- 절대 금지: "LLM proved DIF cause."
 
 ## Gate 6. Incremental Utility
 
-Pass condition:
+통과 조건:
 
-- LLM shows value beyond keyword baseline in at least one metric or one theoretically meaningful covariate lane.
+- LLM이 최소 하나의 지표 또는 이론적으로 의미 있는 covariate lane에서 keyword baseline을 넘어서는 가치를 보인다.
 
-Recommended metrics:
+권장 지표:
 
 - AUPRC / Average Precision.
 - Precision@5.
 - Precision@10.
-- NDCG@k if graded labels exist.
+- graded label이 있으면 NDCG@k.
 
 ## Gate 7. Failure-Mode Audit
 
-Every false positive and false negative sampled for the paper should be coded into:
+논문에 들어가는 false positive와 false negative 사례는 다음 유형으로 코딩한다.
 
 - latent difference confusion.
 - construct-relevant content confusion.
@@ -81,17 +81,17 @@ Every false positive and false negative sampled for the paper should be coded in
 
 ## Gate 8. Claim-Faithfulness Audit
 
-Before writing abstract/discussion, check every major claim:
+Abstract/Discussion 작성 전, 모든 주요 주장을 다음 표에 맞춰 점검한다.
 
-| Claim Type | Allowed Evidence |
+| 주장 유형 | 허용되는 근거 |
 |---|---|
-| LLM generated hypotheses | prompt outputs and parsed results |
-| LLM prioritized useful candidates | ranking metrics and top-k validation |
-| DIF exists | empirical DIF/MNLFA model |
-| mechanism is causal | not allowed from this design |
-| item is biased/unfair | not allowed without substantive fairness review |
+| LLM이 hypothesis를 생성했다 | prompt output과 parsed result |
+| LLM이 유용한 candidate를 prioritization했다 | ranking metric과 top-k validation |
+| DIF가 존재한다 | empirical DIF/MNLFA model |
+| mechanism이 causal하다 | 이 설계에서는 허용 안 됨 |
+| item이 biased/unfair하다 | 별도의 substantive fairness review 없이는 허용 안 됨 |
 
-## Banned Wording
+## 금지 표현
 
 - detects DIF
 - proves DIF
@@ -100,7 +100,7 @@ Before writing abstract/discussion, check every major claim:
 - replaces expert review
 - validates fairness
 
-## Preferred Wording
+## 권장 표현
 
 - generates candidate DIF hypotheses
 - prioritizes item-covariate pairs
