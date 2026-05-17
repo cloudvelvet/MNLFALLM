@@ -1,32 +1,36 @@
-# MAPS LLM-DIF Pipeline Status
+# MAPS LLM-DIF 파이프라인 상태
 
-## Implemented Files
+## 구현된 파일
 
 - `maps_multiscale_llm_prep.R`
-  - Builds a multi-scale parent/youth MAPS item pool.
-  - Outputs long item-response data, item catalog, and LLM prediction template.
+  - MAPS parent/youth 다중 척도 item pool을 만든다.
+  - long item-response data, item catalog, LLM prediction template을 출력한다.
 
 - `maps_llm_dif_gold_screen.R`
-  - Runs fast ordinal-logit DIF screening.
-  - Uses an item-specific model with a leave-one-item-out scale mean proxy,
-    covariate effect, and wave adjustment.
-  - This is a provisional screening model, not final MNLFA evidence.
+  - 빠른 ordinal-logit DIF screening을 실행한다.
+  - item별 leave-one-item-out scale mean proxy, covariate effect, wave adjustment를 사용한다.
+  - 이 모델은 provisional screening model이다. 최종 longitudinal MNLFA evidence가 아니다.
 
 - `maps_llm_dif_prompt_template.md`
-  - Structured JSON prompt template for blinded LLM DIF hypothesis generation.
+  - blind LLM DIF hypothesis generation을 위한 structured JSON prompt template이다.
+  - 이 파일은 실제 실험 prompt이므로, 이전 결과와 비교하려면 함부로 바꾸지 않는다.
 
 - `maps_llm_build_pilot_prompts.R`
-  - Builds 30 JSONL prompts for the low-cost pilot without calling any API.
+  - API를 호출하지 않고 low-cost pilot용 JSONL prompt를 만든다.
 
 - `maps_llm_keyword_baseline_eval.R`
-  - Runs a free keyword baseline that future LLM predictions should beat.
+  - LLM이 넘어야 할 무료 keyword baseline을 계산한다.
 
 - `run_maps_llm_openai_pilot.ps1`
-  - PowerShell OpenAI runner for a tiny paid pilot when `OPENAI_API_KEY` is set.
+  - `OPENAI_API_KEY`가 있을 때 작은 유료 pilot을 실행할 수 있는 PowerShell runner다.
 
-## Generated Local Outputs
+- `run_maps_llm_gemini_pilot.ps1`
+  - Gemini API runner다.
+  - `-Resume`, rate-limit backoff, 느린 실행 옵션을 포함한다.
 
-These files are intentionally ignored by Git under `llm_dif_output/`.
+## 로컬 생성 output
+
+아래 파일들은 `llm_dif_output/` 아래에 생성되며 GitHub에는 올리지 않는다.
 
 - `maps_multiscale_long.csv`
 - `maps_multiscale_qc.csv`
@@ -41,10 +45,13 @@ These files are intentionally ignored by Git under `llm_dif_output/`.
 - `maps_llm_pilot_prompt_preview.txt`
 - `maps_keyword_baseline_predictions.csv`
 - `maps_keyword_baseline_metrics.csv`
+- `maps_llm_gemini_pilot_results_*.jsonl`
+- `maps_llm_gemini_pilot_eval_metrics.csv`
+- `maps_llm_gemini_pilot_eval_joined.csv`
 
-## Current Item Pool
+## 현재 item pool
 
-The preprocessing script found 14 repeated MAPS scale batteries:
+전처리 스크립트는 MAPS 반복 측정 척도 14개를 찾았다.
 
 - Parent acculturation: 12 items
 - Parent acculturative stress: 8 items
@@ -61,15 +68,15 @@ The preprocessing script found 14 repeated MAPS scale batteries:
 - Youth teacher support: 3 items
 - Youth worry: 14 items
 
-Total screening units:
+screening unit:
 
-- 105 items after excluding the unstable youth worry split item
-- respondent-valid covariates only
-- 487 item-by-covariate tests
+- unstable youth worry split item을 제외한 105개 item.
+- respondent-valid covariate만 사용.
+- 총 487개 item-by-covariate test.
 
-## Verification Runs
+## 실행 확인
 
-The following commands were run successfully:
+다음 명령은 성공적으로 실행되었다.
 
 ```powershell
 & 'C:\Program Files\R\R-4.4.2\bin\Rscript.exe' maps_multiscale_llm_prep.R
@@ -81,36 +88,29 @@ The following commands were run successfully:
 & 'C:\Program Files\R\R-4.4.2\bin\Rscript.exe' maps_llm_keyword_baseline_eval.R
 ```
 
-The OpenAI runner was tested without a key:
+OpenAI runner는 key 없이 테스트했다.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\run_maps_llm_openai_pilot.ps1 -Limit 1
 ```
 
-It correctly stopped without making a paid call because `OPENAI_API_KEY` was not
-set.
+`OPENAI_API_KEY`가 없으면 유료 호출 없이 멈추는 것을 확인했다.
 
-## Caveats
+## 주의점
 
-- `item_text` is filled for all current pilot items from the MAPS user guide.
-- The screening model is a practical ordinal DIF screen using a proxy latent
-  score. It is not a final longitudinal MNLFA.
-- Parent gender is unavailable in the current parent file and is excluded from
-  the LLM prediction template and screening tests.
-- Some youth Korean-proficiency values are missing across many item rows because
-  those variables are not consistently available for every respondent/wave.
-- DIF labels are currently based on FDR-adjusted p-values plus a practical
-  coefficient threshold of `|beta| >= 0.20`.
+- 현재 pilot item의 item text는 MAPS 유저가이드 기반으로 모두 채워졌다.
+- screening model은 proxy latent score를 사용한 실용적 ordinal DIF screen이다. 최종 longitudinal MNLFA가 아니다.
+- parent gender는 현재 parent file에서 사용할 수 없어 LLM prediction template과 screening test에서 제외했다.
+- youth Korean-proficiency 값은 respondent/wave 전체에서 항상 안정적으로 있지 않아 일부 item row에서 결측이 많다.
+- 현재 DIF label은 FDR-adjusted p-value와 practical coefficient threshold `|beta| >= 0.20`을 함께 사용한 provisional label이다.
 
-## Next Step
+## 다음 단계
 
-Fill item text from the MAPS user guide, then run a small LLM pilot on 20-30
-items before spending money on multi-model API calls.
+이미 item text는 채웠고 Gemini pilot도 일부 실행했다. 다음 단계는 다음이다.
 
-Current next step:
-
-```powershell
-$env:OPENAI_API_KEY = "..."
-powershell -ExecutionPolicy Bypass -File .\run_maps_llm_openai_pilot.ps1 -Limit 3
-```
+1. full 105 item prompt set을 천천히 실행한다.
+2. `-Resume`으로 이미 성공한 API 결과는 재사용한다.
+3. parse/eval을 다시 실행한다.
+4. 487 item-covariate pair 기준으로 LLM vs keyword baseline 결과를 정리한다.
+5. top-k candidate를 MNLFA/ordinal DIF validation 후보로 선정한다.
 
