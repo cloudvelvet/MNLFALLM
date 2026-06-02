@@ -20,6 +20,8 @@ simulation_parent_discrim_output/
 imps_poster_output/
 llm_dif_output/
 transfer_bundles/
+docx_render_check/
+.kkirikkiri/
 
 # Large serialized model objects
 *.rds
